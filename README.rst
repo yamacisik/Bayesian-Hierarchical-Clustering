@@ -1,6 +1,7 @@
 =======
 Bayesian Hierarchical Clustering
 
+
 An hiearchichal clustering method that uses a conjugate prior to form the clusters. The algorithm uses a tree node class to build the a tree resulting from the clustering process. 
 For more information on the algorithm see : http://www2.stat.duke.edu/~kheller/bhcnew.pdf
 
@@ -51,3 +52,10 @@ Returns **y, tree**
 - **y**:original classification coming from the data set
 
 - **n** :number of iterations
+
+
+
+
+
+
+
