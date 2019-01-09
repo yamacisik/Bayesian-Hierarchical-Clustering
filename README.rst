@@ -1,10 +1,7 @@
 =======
-Final Project for Sta 663  by Matt Welch and Yamac Isik
+Bayesian Hierarchical Clustering
 =======
 
-
-Bayesian Hierarchical Clustering
----------------------
 An hiearchichal clustering method that uses a conjugate prior to form the clusters. The algorithm uses a tree node class to build the a tree resulting from the clustering process. 
 For more information on the algorithm see : http://www2.stat.duke.edu/~kheller/bhcnew.pdf
 
