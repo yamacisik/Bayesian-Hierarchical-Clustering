@@ -9,9 +9,6 @@ Package is downloadable and installable via pip.
 
 - pip install bayescluster
 
-or
-
-- pip install --index-url https://test.pypi.org/simple/ bayescluster
 
 Documentation
 ---------------------
