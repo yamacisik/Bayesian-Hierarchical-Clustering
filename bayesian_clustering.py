@@ -2,11 +2,13 @@ import numpy as np
 from scipy.special import factorial,multigammaln
 from decimal import Decimal
 
-## The node class which has a tree-shaped structure for the hierarchical clustering.
-## Each node acts as a cluster and initially starts with one point, when we start combining the nodes 
-## we update the left, right and points sets accordingly. Furthermore each nodes holds the probability
-## of beloning together with every other nodes, these are also updated accordingly. Using dictionaries
-## allow us to do faster calculations compared to numpy arrays.
+"""
+The node class which has a tree-shaped structure for the hierarchical clustering.
+Each node acts as a cluster and initially starts with one point when we start combining the nodes 
+we update the left, right and points sets accordingly. Furthermore, each nodes holds the probability
+of belonging together with every other node; these are also updated accordingly. Dictionaries
+allow us to do faster calculations compared to numpy arrays.
+"""
 
 
 class Node:
@@ -51,10 +53,10 @@ class Node:
         return z
 
 
-
-## Function that calculates the probability of points in a node belonging together
-## Use of decimals is crucial because some probabilites are rather small and we end up with overflows.
-        
+"""
+Function that calculates the probability of points in a node belonging together
+Use of decimals is crucial because some probabilities are rather small and we end up with overflows.
+"""        
 def prob_hypo(X,kappa0,v0,mu0,eta0):
     nf,df= X.shape
     n=Decimal(nf)
@@ -70,11 +72,11 @@ def prob_hypo(X,kappa0,v0,mu0,eta0):
     d=Decimal(kappa0/(kappa0+nf))**(d/2)
     return float(a*b*c*d)
 
-
-## Posterior and Probability calculations between 2 nodes:
-## @pit is the probability that the data int two nodes belonging together and 
-## @rit is the posterier probability calculation.
-
+"""
+Posterior and Probability calculations between 2 nodes:
+@pit is the probability that the data int two nodes belonging together and 
+@rit is the posterier probability calculation.
+"""
 def get_pi_ri(i,j,alpha):
     clust_k=i.combine(j,alpha)
     nk=len(clust_k.points)
@@ -101,11 +103,12 @@ def get_node(i,nodes):
     for node in nodes:
         if node.number==i:
             return node
-
-## Function that initiates rit and pit calculations by going over each node combination.
-## Further updates only require to update according to new merges which saves time    
-## Returns a list of nodes where with each point belonging to one node.
-## alpha,kappa0,v0,mu0,eta0 are prior paremeters.
+"""
+Function that initiates rit and pit calculations by going over each node combination.
+Further updates only require to update according to new merges  saving time    
+Returns a list of nodes where with each point belonging to one node.
+alpha,kappa0,v0,mu0,eta0 are prior parameters.
+"""
 def init(X,alpha,kappa0,v0,mu0,eta0):
     x=[]
     for i in range(len(X)):
@@ -121,9 +124,10 @@ def init(X,alpha,kappa0,v0,mu0,eta0):
             x[i].rit[j]=r  
         
     return x
-
-## Function that creates a new node from the combination of 2 nodes by updating the left , right and ph values in the new node
-## Later we drop the nodes used for the merge from our list. 
+"""
+Function that creates a new node from the combination of 2 nodes by updating the left, right and ph values in the new node
+Later we drop the nodes used for the merge from our list. 
+"""
 def change_nodes(i,j,n,nodes,alpha):
  
     n1=get_node(i,nodes)
@@ -233,11 +237,11 @@ def change_nodes(i,j,n,nodes,alpha):
             del node.rit[n2.number]
     nodes.append(new_node)
     return nodes 
-
-## Function for updating clusters, essentially this functions uses change_nodes function at each step by n times.
-## We loop through all the nodes find the maximum probability combination and update the list.
-## @nodes--the list of nodes , @n: number of times we merge the nodes(essentially depends on the number of clusters)
-
+"""
+Function for updating clusters, essentially this functions uses the change_nodes function at each step by n times.
+We loop through all the nodes find the maximum probability combination and update the list.
+@nodes--the list of nodes, @n: number of times we merge the nodes(mostly depends on the number of clusters)
+"""
 def update_clust(nodes,n,alpha):    
     ## Find the maximum rit
     m=0
