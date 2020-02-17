@@ -30,7 +30,7 @@ class Node:
         """
         Function that adds a new point into the node.
         
-        Parameters
+        Parameters:
         ----------
          x: int 
             New point to be added into the Node.
@@ -43,7 +43,7 @@ class Node:
         Function that adds multiple points into the node.
         
         Parameters
-        ----------
+        ----------:
          x: list of int 
             New point to be added into the Node.
         """
@@ -65,8 +65,8 @@ class Node:
         """
         Function that combines another node(cluster) with the current one.
         
-        Parameters
-        ----------
+        Parameters:
+        -----------
         y: Node
             Other node or cluster to combine the current note with.
         alpha: float
@@ -99,8 +99,8 @@ def prob_hypo(X,kappa0,v0,mu0,eta0):
     Function that calculates the probability of points in a node belonging together
     Use of decimals is crucial because some probabilities are rather small and we end up with overflows.
     
-    Parameters
-    ----------
+    Parameters:
+    -----------
     X:numpy.Array
         2-D array points (potentially) belonging to the same cluster.
     kappa0: float
@@ -111,6 +111,10 @@ def prob_hypo(X,kappa0,v0,mu0,eta0):
         The prior parameter for Inverse Wischart distribution
     eta0: float
         The prior parameter for Inverse Wischart distribution
+        
+    Returns:
+    --------
+    float: The probability of the points belonging into the same cluster.
     """      
     
     nf,df= X.shape
@@ -133,8 +137,8 @@ def get_pi_ri(i,j,alpha):
     """
     Function that calculates the Posterior Probabilities for 2 nodes belonging into the same cluster.
     
-    Parameters
-    ----------
+    Parameters:
+    -----------
     i: int
         The index of the first node
     j: int
@@ -142,8 +146,8 @@ def get_pi_ri(i,j,alpha):
     alpha: float
         Tuned parameter for the posterior calculations
     
-    Returns 
-    -------
+    Returns: 
+    --------
     pit: numpy.Array
         The probability that the data points in two nodes belonging together
     rit: numpy.Array
@@ -163,13 +167,13 @@ def get_dict_max(d):
     """
     Helper function that calculates the maximum value in a dictionary.
     
-    Parameters
-    ----------
+    Parameters:
+    -----------
     d: dict of float
         The dictonary of float to be checked for maximum value
         
-    Returns
-    -------
+    Returns:
+    --------
     The key corresponding to the maximum value and the maximum value.
     """
     
@@ -200,13 +204,34 @@ def get_node(i,nodes):
     for node in nodes:
         if node.number==i:
             return node
-"""
-Function that initiates rit and pit calculations by going over each node combination.
-Further updates only require to update according to new merges  saving time    
-Returns a list of nodes where with each point belonging to one node.
-alpha,kappa0,v0,mu0,eta0 are prior parameters.
-"""
+
 def init(X,alpha,kappa0,v0,mu0,eta0):
+    
+    """
+    Function that initiates rit and pit calculations by going over each node combination.
+    Further updates only require to update according to new merges  saving time    
+    
+    Parameters:
+    ----------
+    X: numpy.Array
+        The data set for calculating the cluster combinations.
+    alpha: float
+        The prior parameter for Inverse Wischart distribution
+    kappa0: float
+        The prior parameter for Inverse Wischart distribution
+    v0: float
+        The prior parameter for Inverse Wischart distribution
+    mu0: float
+        The prior parameter for Inverse Wischart distribution
+    eta0: float
+        The prior parameter for Inverse Wischart distribution
+    
+    Returns:
+    --------
+    list of Nodes:
+        List of nodes with one point in each Node.
+    """
+    
     x=[]
     for i in range(len(X)):
         node=Node(i,alpha,i)
@@ -221,11 +246,26 @@ def init(X,alpha,kappa0,v0,mu0,eta0):
             x[i].rit[j]=r  
         
     return x
-"""
-Function that creates a new node from the combination of 2 nodes by updating the left, right and ph values in the new node
-Later we drop the nodes used for the merge from our list. 
-"""
+
 def change_nodes(i,j,n,nodes,alpha):
+    
+    """
+    Function that creates a new node from the combination of 2 nodes by updating the left, right and ph values in the new node
+    
+    Parameters:
+    -----------
+    i: int
+        The index of the first node.
+    j: int
+        The index of the second node.
+    n: int
+        Number of points in the data set.
+    nodes: list of Nodes
+        List of nodes to go over for the calculations
+    alpha:
+        The prior parameter for Inverse Wischart distribution.
+        
+    """
  
     n1=get_node(i,nodes)
     n2=get_node(j,nodes)
