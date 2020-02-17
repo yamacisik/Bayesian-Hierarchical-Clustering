@@ -2,13 +2,13 @@ import numpy as np
 from scipy.special import factorial,multigammaln
 from decimal import Decimal
 
-"""
-The node class which has a tree-shaped structure for the hierarchical clustering.
-Each node acts as a cluster and initially starts with one point when we start combining the nodes 
-we update the left, right and points sets accordingly. Furthermore, each nodes holds the probability
-of belonging together with every other node; these are also updated accordingly. Dictionaries
-allow us to do faster calculations compared to numpy arrays.
-"""
+    """
+    The node class which has a tree-shaped structure for the hierarchical clustering.
+    Each node acts as a cluster and initially starts with one point when we start combining the nodes 
+    we update the left, right and points sets accordingly. Furthermore, each nodes holds the probability
+    of belonging together with every other node; these are also updated accordingly. Dictionaries
+    allow us to do faster calculations compared to numpy arrays.
+    """
 
 
 class Node:
@@ -16,8 +16,7 @@ class Node:
     def __init__(self,p,alpha,i):
         
         self.single=True
-        self.points=set()
-        self.points.add(p)
+        self.points=set([p])
         self.d=alpha
         self.number=i
         self.left=None
@@ -27,18 +26,60 @@ class Node:
         self.pit={}
         self.rit={}
 
-## Function for adding new points
     def add(self,x):
+        """
+        Function that adds a new point into the node.
+        
+        Parameters
+        ----------
+         x: int 
+            New point to be added into the Node.
+        
+        """
         self.points.add(x)
         
     def add_all(self,x):
-        self.points=x
+        """
+        Function that adds multiple points into the node.
+        
+        Parameters
+        ----------
+         x: list of int 
+            New point to be added into the Node.
+        """
+        self.points=set(x)
         
     def remove(self,x):
-        self.points.remove(x)
+                """
+        Function that removes a point from the node.
         
- ## Function for combining nodes together into one.       
+        Parameters
+        ----------
+         x: int
+            Point to be removed from the Node
+        """
+        
+        self.points.remove(x)
+    
     def combine(self,y,alpha,i=None):
+        """
+        Function that combines another node(cluster) with the current one.
+        
+        Parameters
+        ----------
+        y: Node
+            Other node or cluster to combine the current note with.
+        alpha: float
+            New alpha parameter for the created cluster
+        i: int
+            The identifier index of the combined parameter. If not specified the cluster id will be the same as 
+            the original cluster.
+        
+        Returns
+        -------
+        Node: Returns a new node as a combination of self and y.         
+        
+        """
 
         p=self.points.union(y.points)
         z=Node(1,self.d,self.number)
@@ -51,13 +92,27 @@ class Node:
         z.d= alpha*factorial(len(p)-1)+self.d*y.d
         z.single=False
         return z
-
-
-"""
-Function that calculates the probability of points in a node belonging together
-Use of decimals is crucial because some probabilities are rather small and we end up with overflows.
-"""        
+  
 def prob_hypo(X,kappa0,v0,mu0,eta0):
+    
+    """
+    Function that calculates the probability of points in a node belonging together
+    Use of decimals is crucial because some probabilities are rather small and we end up with overflows.
+    
+    Parameters
+    ----------
+    X:numpy.Array
+        2-D array points (potentially) belonging to the same cluster.
+    kappa0: float
+        The prior parameter for Inverse Wischart distribution
+    v0: float
+        The prior parameter for Inverse Wischart distribution
+    mu0: float
+        The prior parameter for Inverse Wischart distribution
+    eta0: float
+        The prior parameter for Inverse Wischart distribution
+    """      
+    
     nf,df= X.shape
     n=Decimal(nf)
     d=Decimal(df)
@@ -72,12 +127,28 @@ def prob_hypo(X,kappa0,v0,mu0,eta0):
     d=Decimal(kappa0/(kappa0+nf))**(d/2)
     return float(a*b*c*d)
 
-"""
-Posterior and Probability calculations between 2 nodes:
-@pit is the probability that the data int two nodes belonging together and 
-@rit is the posterier probability calculation.
-"""
+
 def get_pi_ri(i,j,alpha):
+    
+    """
+    Function that calculates the Posterior Probabilities for 2 nodes belonging into the same cluster.
+    
+    Parameters
+    ----------
+    i: int
+        The index of the first node
+    j: int
+        The index of the second node.
+    alpha: float
+        Tuned parameter for the posterior calculations
+    
+    Returns 
+    -------
+    pit: numpy.Array
+        The probability that the data points in two nodes belonging together
+    rit: numpy.Array
+        The posterier probabilities
+    """
     clust_k=i.combine(j,alpha)
     nk=len(clust_k.points)
     dk=clust_k.d
@@ -88,8 +159,20 @@ def get_pi_ri(i,j,alpha):
     rit=(pi*ph)/pit
     return pit,rit
     
-## Function that calculates the maximum value in a dictionary and returns the key-value combination
 def get_dict_max(d):
+    """
+    Helper function that calculates the maximum value in a dictionary.
+    
+    Parameters
+    ----------
+    d: dict of float
+        The dictonary of float to be checked for maximum value
+        
+    Returns
+    -------
+    The key corresponding to the maximum value and the maximum value.
+    """
+    
     ind=0
     m=0
     for i in d:
@@ -98,8 +181,22 @@ def get_dict_max(d):
             ind=i
     return ind,m
 
-## Function that retursn the node with the specific number from a list of nodes/
 def get_node(i,nodes):
+    """
+    Helper function for checking the list of nodes for a specif node and returning it.
+    
+    Parameters:
+    -----------
+    i: int
+        The number of the node to search the given list
+    nodes: list of Node
+        The list of nodes to be searched
+        
+    Returns:
+    --------
+    Node: The specific node from the list.
+    
+    """
     for node in nodes:
         if node.number==i:
             return node
