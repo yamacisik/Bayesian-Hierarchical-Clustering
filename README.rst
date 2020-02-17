@@ -53,7 +53,7 @@ Returns **y, tree**
 
 - **yhat**: predictions of the classifications
 
-- **y**:original classification coming from the data set
+- **y**: original classification coming from the data set
 
 - **n** :number of iterations
 
